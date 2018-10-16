@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import math
 
-LEARNING_RATE = 1e-8
+LEARNING_RATE = 1e-6
 BATCH_SIZE = 64
 TAU = 0.001
 class ActorNet:
@@ -65,7 +65,7 @@ class ActorNet:
     
         H1_a=tf.nn.softplus(tf.matmul(actor_state_in,W1_a)+B1_a)
         H2_a=tf.nn.tanh(tf.matmul(H1_a,W2_a)+B2_a)
-        actor_model=tf.matmul(H2_a,W3_a) + B3_a
+        actor_model=tf.nn.sigmoid(tf.matmul(H2_a,W3_a) + B3_a)
 
         return W1_a, B1_a, W2_a, B2_a, W3_a, B3_a, actor_state_in, actor_model
         

@@ -45,7 +45,7 @@ def main():
             action = agent.evaluate_actor(np.reshape(x,[1,num_states]))
 
             noise = exploration_noise.noise()
-            action = action[0] + 0 #Select action according to current policy and exploration noise
+            action = action[0] + noise #Select action according to current policy and exploration noise
             if i % 100 == 0:
                 print ("Action at step", t ," :",action,"\n")
             

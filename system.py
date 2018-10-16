@@ -109,9 +109,6 @@ class ControlSystem:
         u1 = 1
         u2 = 0
 
-
-
-
         _y_ref = 0.
         for time_index, _t in enumerate(self.T):
             Y_ref.append(_y_ref)
@@ -151,7 +148,7 @@ class ControlSystem:
         reward is calculated with given time_index
         '''
         self.computeNextStep(zeta=action[0])
-        obs = [self.theta, self.theta_1]
+        obs = [self.theta, self.theta - self.theta_1]
         reward = self.getReward(time_index, self.theta)
         return obs, reward
 
