@@ -7,7 +7,7 @@ import numpy.random as nr
 
 class OUNoise:
     """ docstring for OUNoise """
-    def __init__(self,action_dimension,mu=0, theta=0.05, sigma=0.1):
+    def __init__(self,action_dimension,mu=0, theta=0.04, sigma=0.05):
         self.action_dimension = action_dimension
         self.mu = mu
         self.theta = theta

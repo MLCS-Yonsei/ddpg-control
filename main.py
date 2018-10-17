@@ -7,6 +7,11 @@ import numpy as np
 from ddpg import DDPG
 from ou_noise import OUNoise
 from system import ControlSystem
+
+import errno
+import os
+from datetime import datetime
+
 #specify parameters here:
 episodes=10000
 is_batch_norm = False #batch normalization switch
@@ -33,11 +38,17 @@ def main():
     #saving reward:
     reward_st = np.array([0])
 
+    log_dir = os.path.join(
+        os.getcwd(), 'log',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
+    os.makedirs(log_dir)
     
     for i in range(episodes):
         print ("==== Starting episode no:",i,"====")
         observation = env.reset()
         reward_per_episode = 0
+        actions_per_episode = []
         for t in range(steps):
             #rendering environmet (optional)            
             env.render()
@@ -46,8 +57,9 @@ def main():
 
             noise = exploration_noise.noise()
             action = action[0] + noise #Select action according to current policy and exploration noise
-            if i % 100 == 0:
-                print ("Action at step", t ," :",action,"\n")
+            actions_per_episode.append(action)
+            # if i % 100 == 0:
+            #     print ("Action at step", t ," :",action,"\n")
             
             observation,reward=env.step(action,t)
             # print ("Reward at step", t ," :",reward,"\n")
@@ -65,6 +77,9 @@ def main():
                 exploration_noise.reset() #reinitializing random noise for action exploration
                 reward_st = np.append(reward_st,reward_per_episode)
                 np.savetxt('episode_reward.txt',reward_st, newline="\n")
+
+                # Save actions
+                np.savetxt(log_dir + '/' + str(i) + '.txt', actions_per_episode)
                 # print ('\n\n')
                 break
     total_reward+=reward_per_episode            
