@@ -92,7 +92,7 @@ def main():
                 np.savetxt(log_dir + '/' + str(i) + '.txt', actions_per_episode)
 
                 # save model
-                if i % 1 == 0:
+                if i % 100 == 0:
                     print('save')
                     agent.save_model()
                 # print ('\n\n')
