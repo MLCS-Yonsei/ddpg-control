@@ -102,7 +102,8 @@ class ControlSystem:
 
     def getYRef(self, display=False):
         Y_ref = []
-
+        Zeta = []
+        
         # impulse
         th1 = 0
         th2 = 0
@@ -115,6 +116,7 @@ class ControlSystem:
 
             # Compute
             zeta = self.zetaFunction(time_vector=self.T, index=time_index)
+            Zeta.append(zeta)
             co = self.computeSystem(zeta=zeta)
 
             theta = - co['a1'] * th1 - co['a2'] * th2 + co['b1'] * u1 + co['b2'] * u2
@@ -130,7 +132,7 @@ class ControlSystem:
                 u1 = 0
             
         if display is True:
-            plt.step(self.T,self.y)
+            plt.step(self.T,Zeta)
             plt.grid()
             plt.xlabel('t') 
             plt.ylabel('y')

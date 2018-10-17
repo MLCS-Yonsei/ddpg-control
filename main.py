@@ -55,6 +55,11 @@ def main():
             x = observation
             action = agent.evaluate_actor(np.reshape(x,[1,num_states]))
 
+            if action[0] > 1:
+                action[0] = 1
+            elif action[0] < 0:
+                action[0] = 0
+
             noise = exploration_noise.noise()
             action = action[0] + noise #Select action according to current policy and exploration noise
             actions_per_episode.append(action)
