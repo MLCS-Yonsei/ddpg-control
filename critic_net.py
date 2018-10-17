@@ -1,14 +1,14 @@
 import numpy as np
 import tensorflow as tf
 import math
+import os
 
 TAU = 0.001
-LEARNING_RATE= 0.001
+LEARNING_RATE= 1e-4
 BATCH_SIZE = 64
 class CriticNet:
     """ Critic Q value model of the DDPG algorithm """
     def __init__(self,num_states,num_actions):
-        
         self.g=tf.Graph()
         with self.g.as_default():
             self.sess = tf.InteractiveSession()
@@ -59,6 +59,8 @@ class CriticNet:
                 self.t_W3_c.assign(TAU*self.W3_c+(1-TAU)*self.t_W3_c),
                 self.t_B3_c.assign(TAU*self.B3_c+(1-TAU)*self.t_B3_c)
             ]
+
+            self.saver = tf.train.Saver()
             
     def create_critic_net(self, num_states=4, num_actions=1):
         N_HIDDEN_1 = 400
@@ -101,4 +103,13 @@ class CriticNet:
     def update_target_critic(self):
         self.sess.run(self.update_target_critic_op)
 
+    def save_model(self):
+        if not os.path.exists('.model'):
+            os.makedirs('.model')
+        self.saver.save(self.sess, '.model/critic_model.ckpt')
+
+    def load_model(self):
+        if not os.path.exists('.model'):
+            os.makedirs('.model')
+        self.saver.restore(self.sess, '.model/critic_model.ckpt')
 

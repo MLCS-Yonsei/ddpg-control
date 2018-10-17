@@ -1,4 +1,4 @@
-
+.model/*
 *.pyc
 episode_reward.txt
 log/*

@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import math
+import os
 
 LEARNING_RATE = 1e-4
 BATCH_SIZE = 64
@@ -10,9 +11,8 @@ class ActorNet:
     
     def __init__(self,num_states,num_actions):
         self.g=tf.Graph()
-        with self.g.as_default():
+        with self.g.as_default():          
             self.sess = tf.InteractiveSession()
-            
            
             #actor network model parameters:
             self.W1_a, self.B1_a, self.W2_a, self.B2_a, self.W3_a, self.B3_a,\
@@ -48,6 +48,8 @@ class ActorNet:
                 self.t_B2_a.assign(TAU*self.B2_a+(1-TAU)*self.t_B2_a),
                 self.t_W3_a.assign(TAU*self.W3_a+(1-TAU)*self.t_W3_a),
                 self.t_B3_a.assign(TAU*self.B3_a+(1-TAU)*self.t_B3_a)]
+
+            self.saver = tf.train.Saver()
         
 
 
@@ -82,5 +84,15 @@ class ActorNet:
     
     def update_target_actor(self):
         self.sess.run(self.update_target_actor_op)    
+
+    def save_model(self):
+        if not os.path.exists('.model'):
+            os.makedirs('.model')
+        self.saver.save(self.sess, '.model/actor_model.ckpt')
+
+    def load_model(self):
+        if not os.path.exists('.model'):
+            os.makedirs('.model')
+        self.saver.restore(self.sess, '.model/actor_model.ckpt')
 
         

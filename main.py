@@ -12,12 +12,14 @@ import errno
 import os
 from datetime import datetime
 
+from actor_net import ActorNet
+from critic_net import CriticNet
+
 #specify parameters here:
 episodes=10000
 is_batch_norm = False #batch normalization switch
 
 def main():
-    experiment= 'control-system-v0' #specify environments here
     env=ControlSystem()
 
     steps= env.timestep_limit #steps per episode    
@@ -26,6 +28,9 @@ def main():
     
     #Randomly initialize critic,actor,target critic, target actor network  and replay buffer   
     agent = DDPG(env, is_batch_norm)
+
+    agent.load_model()
+
     exploration_noise = OUNoise(env.action_space.shape[0])
     counter=0
     reward_per_episode = 0    
@@ -85,6 +90,11 @@ def main():
 
                 # Save actions
                 np.savetxt(log_dir + '/' + str(i) + '.txt', actions_per_episode)
+
+                # save model
+                if i % 1 == 0:
+                    print('save')
+                    agent.save_model()
                 # print ('\n\n')
                 break
     total_reward+=reward_per_episode            

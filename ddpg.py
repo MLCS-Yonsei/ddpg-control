@@ -41,7 +41,18 @@ class DDPG:
         action_bounds = [action_max,action_min] 
         self.grad_inv = grad_inverter(action_bounds)
         
+    def load_model(self):
+        try:
+            self.critic_net.load_model()
+            self.actor_net.load_model()
+        except Exception as ex:
+            print(ex)
+
+    def save_model(self):    
+        self.critic_net.save_model()
+        self.actor_net.save_model()
         
+
     def evaluate_actor(self, state_t):
         return self.actor_net.evaluate_actor(state_t)
     
