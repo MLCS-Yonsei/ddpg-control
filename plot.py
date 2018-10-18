@@ -39,7 +39,7 @@ for i, _l in enumerate(log_files):
 
 # plt.show()
 
-plt.plot(logs[2800])
+plt.plot(logs[4000])
 plt.show()
 
 # plt.plot(np.loadtxt('episode_reward.txt'))
