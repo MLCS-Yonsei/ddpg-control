@@ -14,7 +14,9 @@ class ControlSystem:
     ts = 0.02
     duration = 16 # in seconds
     '''
-    def __init__(self):
+    def __init__(self, enable_actuator_dynamics = False):
+        self.enable_actuator_dynamics = enable_actuator_dynamics
+
         self.T = self.getTimeVector(duration=16,ts=0.02)
         self.resetValues()
 
@@ -26,12 +28,21 @@ class ControlSystem:
         self.action_space = spaces.Box(low=-0., high=1.,
                                     shape=(1,))
 
-        print(self.action_space.low)
-   
     def resetValues(self):
         self._y = 0.
         self.Y = []
         self.Y_ref = self.getYRef(display=False)
+
+        if self.enable_actuator_dynamics == True:
+            self.ad = {}
+            self.ad['co'] = self.computeActuatorDynamics(T_s=0.5, ts=0.02)
+            self.ad['_z'] = 0.
+            self.ad['Z'] = []
+            self.ad['th2'] = 0
+            self.ad['th1'] = 0
+            self.ad['u2'] = 0
+            self.ad['u1'] = 0
+            self.ad['th'] = None
 
         # Impulse Response
         self.theta_2 = 0
@@ -40,6 +51,9 @@ class ControlSystem:
         self.u_1 = 1
 
         self.theta = None
+
+    def getTimeVector(self, duration=16, ts=0.02):
+        return np.arange(0, duration, ts)
 
     def computeSystem(self, zeta=0.707, w0=1., ts=0.02):
         # if zeta > 1:
@@ -61,11 +75,49 @@ class ControlSystem:
 
         return co
 
-    def getTimeVector(self, duration=16, ts=0.02):
-        return np.arange(0, duration, ts)
+    def computeActuatorDynamics(self, T_s=0.5, ts=0.02):
+        '''
+        ts : sampling time
+        '''
+        g = tf(1, [T_s, 1])
+        gz = c2d(g,ts)
 
-    def computeNextStep(self, zeta):
+        coeffs = tfdata(gz)
+
+        co = {
+            'a1':coeffs[1][0][0][1],
+            'a2':coeffs[1][0][0][2],
+            'b1':coeffs[0][0][0][0],
+            'b2':coeffs[0][0][0][1],
+            'dt':gz.dt
+        }
+
+        return co
+
+    def computeZetaFromActuatorDynamics(self, action):
+        self.ad['u1'] = action
+
+        self.ad['th'] = - self.ad['co']['a1'] * self.ad['th1'] - self.ad['co']['a2'] * self.ad['th2'] + self.ad['co']['b1'] * self.ad['u1'] + self.ad['co']['b2'] * self.ad['u2']
+        self.ad['_z'] += self.ad['th'] - self.ad['th1']
+
+        self.ad['th2'] = self.ad['th1']
+        self.ad['th1'] = self.ad['th']
+        self.ad['u2'] = self.ad['u1']
+        try:
+            self.ad['u1'] = self.ad['u']
+        except:
+            # Impulse Response
+            self.ad['u1'] = 0
+
+        return self.ad['_z']
+
+    def computeNextStep(self, action):
         self.Y.append(self._y)
+
+        if self.enable_actuator_dynamics == True:
+            zeta = self.computeZetaFromActuatorDynamics(action)
+        else:
+            zeta = action
 
         co = self.computeSystem(zeta=zeta)
 
@@ -146,12 +198,12 @@ class ControlSystem:
     def step(self, action, time_index):
         '''
         Computes system with given action
-        returns y_t and y_t-1 as states
+        returns y_t and y_t - y_t-1 as states
         reward is calculated with given time_index
         '''
-        self.computeNextStep(zeta=action[0])
+        self.computeNextStep(action=action[0])
         obs = [self.theta, self.theta - self.theta_1]
-        reward = self.getReward(time_index, self.theta)
+        reward = self.getReward(time_index, self._y)
         return obs, reward
 
     def reset(self):

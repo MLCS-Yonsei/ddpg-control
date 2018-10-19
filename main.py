@@ -15,12 +15,14 @@ from datetime import datetime
 from actor_net import ActorNet
 from critic_net import CriticNet
 
+import argparse
+
 #specify parameters here:
 episodes=10000
 is_batch_norm = False #batch normalization switch
 
 def main():
-    env=ControlSystem()
+    env=ControlSystem(enable_actuator_dynamics = True)
 
     steps= env.timestep_limit #steps per episode    
     assert isinstance(env.observation_space, Box), "observation space must be continuous"
@@ -29,7 +31,7 @@ def main():
     #Randomly initialize critic,actor,target critic, target actor network  and replay buffer   
     agent = DDPG(env, is_batch_norm)
 
-    agent.load_model()
+    # agent.load_model()
 
     exploration_noise = OUNoise(env.action_space.shape[0])
     counter=0
