@@ -2,3 +2,4 @@
 *.pyc
 episode_reward.txt
 log/*
+filtered_log/*

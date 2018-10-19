@@ -62,7 +62,7 @@ class CriticNet:
 
             self.saver = tf.train.Saver()
             
-    def create_critic_net(self, num_states=4, num_actions=1):
+    def create_critic_net(self, num_states=2, num_actions=1):
         N_HIDDEN_1 = 400
         N_HIDDEN_2 = 300
         critic_state_in = tf.placeholder("float",[None,num_states])
@@ -79,7 +79,7 @@ class CriticNet:
         H1_c=tf.nn.softplus(tf.matmul(critic_state_in,W1_c)+B1_c)
         H2_c=tf.nn.tanh(tf.matmul(H1_c,W2_c)+tf.matmul(critic_action_in,W2_action_c)+B2_c)
             
-        critic_q_model=tf.matmul(H2_c,W3_c)+B3_c
+        critic_q_model=tf.nn.sigmoid(tf.matmul(H2_c,W3_c)+B3_c)
             
        
         return W1_c, B1_c, W2_c, W2_action_c, B2_c, W3_c, B3_c, critic_q_model, critic_state_in, critic_action_in
