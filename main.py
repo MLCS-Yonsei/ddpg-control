@@ -22,7 +22,7 @@ episodes=10000
 is_batch_norm = False #batch normalization switch
 
 def main():
-    env=ControlSystem(enable_actuator_dynamics = True)
+    env=ControlSystem(enable_actuator_dynamics = False)
 
     steps= env.timestep_limit #steps per episode    
     assert isinstance(env.observation_space, Box), "observation space must be continuous"

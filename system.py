@@ -83,7 +83,7 @@ class ControlSystem:
         gz = c2d(g,ts)
 
         coeffs = tfdata(gz)
-
+        print(coeffs[1][0][0])
         co = {
             'a1':coeffs[1][0][0][1],
             'a2':coeffs[1][0][0][2],
