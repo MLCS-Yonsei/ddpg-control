@@ -265,7 +265,7 @@ class ControlSystem:
         reward = self.getReward(time_index)
 
         if self.enable_actuator_dynamics == False:
-            return obs, reward
+            return obs, reward, self.Y, self.T
         elif self.enable_actuator_dynamics == True:
             return obs, reward, self.ad['_z'], self.Y, self.T
 

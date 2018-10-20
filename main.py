@@ -98,7 +98,7 @@ def main():
             #     print ("Action at step", t ," :",action,"\n")
             
             if enable_actuator_dynamics == False:
-                observation,reward=env.step(action,t)
+                observation,reward,Y_plot,t_plot=env.step(action,t)
             elif enable_actuator_dynamics == True:
                 observation,reward,filtered_action,Y_plot,t_plot=env.step(action,t)
                 filtered_action_per_episode.append(filtered_action)
