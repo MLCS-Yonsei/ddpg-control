@@ -3,3 +3,4 @@
 episode_reward.txt
 log/*
 filtered_log/*
+y_hat_log/*
