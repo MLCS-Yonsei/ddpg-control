@@ -5,12 +5,16 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-log_dirs = glob('./log/*')
+# log_dirs = glob('./log/*')
+# log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
+folder = input("folder name:")
+log_dirs = glob('./log/' + folder)
 log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
 
 _l = np.loadtxt(log_files[0])
 logs = np.zeros((len(log_files),_l.shape[0]))
 
+print("Total Length: ", len(log_files))
 # fig, ax = plt.subplots()
 
 # x = np.arange(0, _l.shape[0], 1)
@@ -18,6 +22,7 @@ logs = np.zeros((len(log_files),_l.shape[0]))
 
 for i, _l in enumerate(log_files):
     _index = int(os.path.basename(_l).split('.')[0])
+    # print(_index)
     logs[_index] = np.loadtxt(_l)
 
 # fig = plt.figure()
@@ -39,8 +44,14 @@ for i, _l in enumerate(log_files):
 
 # plt.show()
 
-plt.plot(logs[4000])
-plt.show()
+while True:
+    try:
+        plt.close()
+    except Exception as ex:
+        pass
+    data = input("Index:")
+    plt.plot(logs[int(data)])
+    plt.show()
 
 # plt.plot(np.loadtxt('episode_reward.txt'))
 # plt.show()

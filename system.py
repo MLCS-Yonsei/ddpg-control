@@ -38,9 +38,7 @@ class ControlSystem:
             self.ad['co'] = self.computeActuatorDynamics(T_s=0.5, ts=0.02)
             self.ad['_z'] = 0.
             self.ad['Z'] = []
-            self.ad['th2'] = 0
             self.ad['th1'] = 0
-            self.ad['u2'] = 0
             self.ad['u1'] = 0
             self.ad['th'] = None
 
@@ -48,7 +46,7 @@ class ControlSystem:
         self.theta_2 = 0
         self.theta_1 = 0
         self.u_2 = 0
-        self.u_1 = 1
+        self.u_1 = 10
 
         self.theta = None
 
@@ -83,31 +81,24 @@ class ControlSystem:
         gz = c2d(g,ts)
 
         coeffs = tfdata(gz)
-        print(coeffs[1][0][0])
+
         co = {
             'a1':coeffs[1][0][0][1],
-            'a2':coeffs[1][0][0][2],
             'b1':coeffs[0][0][0][0],
-            'b2':coeffs[0][0][0][1],
             'dt':gz.dt
         }
 
         return co
 
     def computeZetaFromActuatorDynamics(self, action):
+        self.ad['Z'].append(self.ad['_z'])
+
         self.ad['u1'] = action
 
-        self.ad['th'] = - self.ad['co']['a1'] * self.ad['th1'] - self.ad['co']['a2'] * self.ad['th2'] + self.ad['co']['b1'] * self.ad['u1'] + self.ad['co']['b2'] * self.ad['u2']
+        self.ad['th'] = - self.ad['co']['a1'] * self.ad['th1'] + self.ad['co']['b1'] * self.ad['u1']
         self.ad['_z'] += self.ad['th'] - self.ad['th1']
 
-        self.ad['th2'] = self.ad['th1']
         self.ad['th1'] = self.ad['th']
-        self.ad['u2'] = self.ad['u1']
-        try:
-            self.ad['u1'] = self.ad['u']
-        except:
-            # Impulse Response
-            self.ad['u1'] = 0
 
         return self.ad['_z']
 
@@ -152,14 +143,14 @@ class ControlSystem:
         plt.ylabel('y')
         plt.show()
 
-    def getYRef(self, display=False):
+    def getYRef(self, display=True):
         Y_ref = []
         Zeta = []
         
         # impulse
         th1 = 0
         th2 = 0
-        u1 = 1
+        u1 = 10
         u2 = 0
 
         _y_ref = 0.
@@ -184,7 +175,8 @@ class ControlSystem:
                 u1 = 0
             
         if display is True:
-            plt.step(self.T,Zeta)
+            print("y_ref")
+            plt.step(self.T,Y_ref)
             plt.grid()
             plt.xlabel('t') 
             plt.ylabel('y')
@@ -204,7 +196,10 @@ class ControlSystem:
         self.computeNextStep(action=action[0])
         obs = [self.theta, self.theta - self.theta_1]
         reward = self.getReward(time_index, self._y)
-        return obs, reward
+        if self.enable_actuator_dynamics == False:
+            return obs, reward
+        elif self.enable_actuator_dynamics == True:
+            return obs, reward, self.ad['_z'], self.Y, self.T
 
     def reset(self):
         self.resetValues()

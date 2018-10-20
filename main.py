@@ -17,12 +17,15 @@ from critic_net import CriticNet
 
 import argparse
 
+import matplotlib.pyplot as plt
+
 #specify parameters here:
 episodes=10000
 is_batch_norm = False #batch normalization switch
 
 def main():
-    env=ControlSystem(enable_actuator_dynamics = False)
+    enable_actuator_dynamics = True
+    env=ControlSystem(enable_actuator_dynamics = enable_actuator_dynamics)
 
     steps= env.timestep_limit #steps per episode    
     assert isinstance(env.observation_space, Box), "observation space must be continuous"
@@ -31,7 +34,7 @@ def main():
     #Randomly initialize critic,actor,target critic, target actor network  and replay buffer   
     agent = DDPG(env, is_batch_norm)
 
-    # agent.load_model()
+    agent.load_model()
 
     exploration_noise = OUNoise(env.action_space.shape[0])
     counter=0
@@ -49,13 +52,21 @@ def main():
         os.getcwd(), 'log',
         datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
+    filtered_log_dir = os.path.join(
+        os.getcwd(), 'filtered_log',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
     os.makedirs(log_dir)
+    os.makedirs(filtered_log_dir)
     
     for i in range(episodes):
         print ("==== Starting episode no:",i,"====")
         observation = env.reset()
         reward_per_episode = 0
         actions_per_episode = []
+        if enable_actuator_dynamics == True:
+            filtered_action_per_episode = []
+
         for t in range(steps):
             #rendering environmet (optional)            
             env.render()
@@ -73,7 +84,12 @@ def main():
             # if i % 100 == 0:
             #     print ("Action at step", t ," :",action,"\n")
             
-            observation,reward=env.step(action,t)
+            if enable_actuator_dynamics == False:
+                observation,reward=env.step(action,t)
+            elif enable_actuator_dynamics == True:
+                observation,reward,filtered_action,Y_plot,t_plot=env.step(action,t)
+                filtered_action_per_episode.append(filtered_action)
+            
             # print ("Reward at step", t ," :",reward,"\n")
             #add y_t,y_t-1,action,reward,timestep to experience memory
             agent.add_experience(x,observation,action,reward,t)
@@ -90,13 +106,20 @@ def main():
                 reward_st = np.append(reward_st,reward_per_episode)
                 np.savetxt('episode_reward.txt',reward_st, newline="\n")
 
+                print("Y_plot")
+                plt.step(t_plot,Y_plot)
+                plt.grid()
+                plt.xlabel('t') 
+                plt.ylabel('y')
+                plt.show()
                 # Save actions
-                np.savetxt(log_dir + '/' + str(i) + '.txt', actions_per_episode)
+                np.savetxt(log_dir + '/' + str(i).zfill(7) + '.txt', actions_per_episode)
+                np.savetxt(filtered_log_dir + '/' + str(i).zfill(7) + '.txt', actions_per_episode)
 
                 # save model
                 if i % 100 == 0:
                     print('save')
-                    agent.save_model()
+                    # agent.save_model()
                 # print ('\n\n')
                 break
     total_reward+=reward_per_episode            
