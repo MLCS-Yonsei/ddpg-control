@@ -1,6 +1,13 @@
 #Implementation of Deep Deterministic Gradient with Tensor Flow"
 # Author: Steven Spielberg Pon Kumar (github.com/stevenpjg)
 
+try:
+    import matplotlib.pyplot as plt
+except:
+    import matplotlib
+    matplotlib.use('TkAgg')
+    import matplotlib.pyplot as plt
+
 import gym
 from gym.spaces import Box, Discrete
 import numpy as np
@@ -16,8 +23,6 @@ from actor_net import ActorNet
 from critic_net import CriticNet
 
 import argparse
-
-import matplotlib.pyplot as plt
 
 #specify parameters here:
 episodes=10000
@@ -52,12 +57,20 @@ def main():
         os.getcwd(), 'log',
         datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-    filtered_log_dir = os.path.join(
-        os.getcwd(), 'filtered_log',
+    if enable_actuator_dynamics == True:
+        filtered_log_dir = os.path.join(
+            os.getcwd(), 'filtered_log',
+            datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
+    y_hat_log_dir = os.path.join(
+        os.getcwd(), 'y_hat_log',
         datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
+
     os.makedirs(log_dir)
-    os.makedirs(filtered_log_dir)
+    if enable_actuator_dynamics == True:
+        os.makedirs(filtered_log_dir)
+    os.makedirs(y_hat_log_dir)
     
     for i in range(episodes):
         print ("==== Starting episode no:",i,"====")
@@ -106,15 +119,18 @@ def main():
                 reward_st = np.append(reward_st,reward_per_episode)
                 np.savetxt('episode_reward.txt',reward_st, newline="\n")
 
-                print("Y_plot")
-                plt.step(t_plot,Y_plot)
-                plt.grid()
-                plt.xlabel('t') 
-                plt.ylabel('y')
-                plt.show()
+                # print("Y_plot")
+                # plt.step(t_plot,Y_plot)
+                # plt.grid()
+                # plt.xlabel('t') 
+                # plt.ylabel('y')
+                # plt.show()
+
                 # Save actions
                 np.savetxt(log_dir + '/' + str(i).zfill(7) + '.txt', actions_per_episode)
-                np.savetxt(filtered_log_dir + '/' + str(i).zfill(7) + '.txt', actions_per_episode)
+                if enable_actuator_dynamics == True:
+                    np.savetxt(filtered_log_dir + '/' + str(i).zfill(7) + '.txt', filtered_action_per_episode)
+                np.savetxt(y_hat_log_dir + '/' + str(i).zfill(7) + '.txt', Y_plot)
 
                 # save model
                 if i % 100 == 0:

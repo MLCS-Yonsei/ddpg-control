@@ -2,7 +2,12 @@ import numpy as np
 from glob import glob
 import os
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except:
+    import matplotlib
+    matplotlib.use('TkAgg')
+    import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 # log_dirs = glob('./log/*')
