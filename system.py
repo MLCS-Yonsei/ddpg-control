@@ -279,5 +279,5 @@ class ControlSystem:
         pass
 
 if __name__ == "__main__":
-    cs = ControlSystem(enable_actuator_dynamics=True)
+    cs = ControlSystem(enable_actuator_dynamics=False)
     cs.getYRef(display=True)

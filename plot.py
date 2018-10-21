@@ -13,7 +13,8 @@ import matplotlib.animation as animation
 # log_dirs = glob('./log/*')
 # log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
 folder = input("folder name:")
-log_dirs = glob('./log/' + folder)
+folder_type = input("folder type name:")
+log_dirs = glob('./181021/'+folder_type+'/' + folder)
 log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
 
 _l = np.loadtxt(log_files[0])

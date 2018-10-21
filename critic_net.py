@@ -4,7 +4,7 @@ import math
 import os
 
 TAU = 0.001
-LEARNING_RATE= 1e-4
+LEARNING_RATE= 1e-3
 BATCH_SIZE = 64
 class CriticNet:
     """ Critic Q value model of the DDPG algorithm """
