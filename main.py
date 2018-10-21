@@ -29,7 +29,7 @@ episodes=10000
 is_batch_norm = False #batch normalization switch
 
 def main():
-    enable_actuator_dynamics = False
+    enable_actuator_dynamics = True
     env=ControlSystem(enable_actuator_dynamics = enable_actuator_dynamics)
 
     steps= env.timestep_limit #steps per episode    
