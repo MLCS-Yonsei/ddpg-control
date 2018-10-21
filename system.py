@@ -251,7 +251,7 @@ class ControlSystem:
         return Y_ref
 
     def getReward(self, time_index):
-        return -abs(self.Y_ref[time_index] - self.Y[time_index])
+        return -(abs(self.Y_ref[time_index] - self.Y[time_index])**2)
 
     def step(self, action, time_index):
         '''
