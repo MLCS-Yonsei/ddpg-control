@@ -9,6 +9,7 @@ from control import *
 from control.matlab import *
 
 from gym import error, spaces
+from gp import createRandomFunction
 
 class ControlSystem:
     '''
@@ -22,6 +23,7 @@ class ControlSystem:
     '''
     
     def __init__(self, enable_actuator_dynamics = False):
+        self.random_function = None
         self.enable_actuator_dynamics = enable_actuator_dynamics
         self.impulse_magnitude = 10
 
@@ -36,9 +38,8 @@ class ControlSystem:
         self.action_space = spaces.Box(low=-0., high=1.,
                                     shape=(1,))
 
-        
-
     def resetValues(self):
+        self.getRandomFunction(self.T)
         self._y = 0.
         self.Y = []
         self.Y_ref = self.getYRef(display=False)
@@ -139,9 +140,17 @@ class ControlSystem:
                 # Impulse Response
                 self.u_1 = 0
 
+    def getRandomFunction(self, T):
+        print("Get new function")
+        self.random_function = createRandomFunction(self.T)
+
     def zetaFunction(self, time_vector, index):
-        _x = index * (np.pi / len(time_vector))
-        return np.cos(_x) / 6 + 2/6 # Cos curve drop from 0.5 to 0.167
+        if self.random_function is None:
+            self.getRandomFunction(self.T)
+        # _x = int(index * (np.pi / len(time_vector)))
+        # print(index)
+        # return np.cos(_x) / 6 + 2/6 # Cos curve drop from 0.5 to 0.167
+        return self.random_function[index]
 
     def plotZetaRef(self):
         Zeta = []
@@ -238,7 +247,7 @@ class ControlSystem:
             plt.step(self.T,Zeta)
             plt.grid()
             plt.xlabel('t') 
-            plt.ylabel('Filtered Zeta')
+            plt.ylabel('Zeta')
             plt.show()
 
             print("y_ref")
@@ -270,7 +279,9 @@ class ControlSystem:
             return obs, reward, self.ad['_z'], self.Y, self.T
 
     def reset(self):
+        print("ENV reset")
         self.resetValues()
+
         return [0, 0]
 
 
@@ -280,4 +291,5 @@ class ControlSystem:
 
 if __name__ == "__main__":
     cs = ControlSystem(enable_actuator_dynamics=False)
+    print("GG")
     cs.getYRef(display=True)
