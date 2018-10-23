@@ -8,65 +8,82 @@ except:
     import matplotlib
     matplotlib.use('TkAgg')
     import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+
+import matplotlib.gridspec as gridspec
 
 from system import ControlSystem
 
-cs = ControlSystem(enable_actuator_dynamics=False)
-Y_ref = cs.getYRef(display=False)
-
-
-# log_dirs = glob('./log/*')
-# log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
-folder_type = input("folder type name:")
 folder = input("folder name:")
+# folder = '2018-10-23_20-42-38'
 
-log_dirs = glob('./logs/'+folder_type+'/' + folder)
-log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
+log_dir = os.path.join('logs',folder)
+targets = ['action','filtered_action','function','y_hat','y_ref']
+# targets = ['action']
 
-_l = np.loadtxt(log_files[0])
-logs = np.zeros((len(log_files),_l.shape[0]))
+logs = {}
+for target in targets:
+    _d = os.path.join(log_dir,target)
+    if os.path.exists(_d):
+        _log_files = sorted(glob(os.path.join(_d,'*.txt')))
 
-print("Total Length: ", len(log_files))
-# fig, ax = plt.subplots()
+        if len(_log_files) > 0:
+            _ls = np.zeros((len(_log_files),np.loadtxt(_log_files[0]).shape[0]))
+            for i, _l in enumerate(_log_files):
+                _index = int(os.path.basename(_l).split('.')[0])
+                _ls[_index] = np.loadtxt(_l)
 
-# x = np.arange(0, _l.shape[0], 1)
-# line, = ax.plot(x, logs[0])
-
-for i, _l in enumerate(log_files):
-    _index = int(os.path.basename(_l).split('.')[0])
-    # print(_index)
-    logs[_index] = np.loadtxt(_l)
-
-# fig = plt.figure()
-# ax1 = fig.add_subplot(1,2,1)
-
-# ax1.set_xlim([0,logs.shape[1]])
-# ax1.autoscale_view()
-
-# im, = ax1.plot([], [], color=(0,0,1))
-
-# def func(n):
-#     print(logs[n, 0])
-#     im.set_xdata(x)
-#     im.set_ydata(logs[n, :])
-
-#     return im
-
-# ani = animation.FuncAnimation(fig, func, frames=logs.shape[0], interval=1, blit=False)
-
-# plt.show()
+            logs[target] = _ls
 
 while True:
-    try:
-        plt.close()
-    except Exception as ex:
-        pass
-    data = input("Index:")
-    plt.plot(Y_ref,label='y_optimal')
-    plt.plot(logs[int(data)],label='y_hat')
-    plt.xlabel('t') 
-    plt.show()
+    if 'filtered_action' in logs:
+        cs = ControlSystem(enable_actuator_dynamics=True)
+    else:
+        cs = ControlSystem(enable_actuator_dynamics=False)
 
-# plt.plot(np.loadtxt('episode_reward.txt'))
-# plt.show()
+    index = int(input('Episode Index (max '+str(len(logs['action'])-1)+'):'))
+
+    plt_cnt = 0
+    fig = plt.figure(0, figsize=(12, 9), )
+    fig.canvas.set_window_title('Episode '+str(index))
+    gs = gridspec.GridSpec(3,2)
+    for target in targets:
+        if target in logs:
+            _l = logs[target][index]
+            
+            if target == 'action':
+                ax1 = plt.subplot(gs[plt_cnt, :])
+                ax1.plot(_l,label='Input Action')
+                if 'function' in logs:
+                    ax1.plot(logs['function'][index],label='Random Function')
+                else:
+                    if 'filtered_action' in logs:
+                        ax1.plot(cs.getZetaRef('unfiltered_input'),label='Random Function')
+                    else:
+                        ax1.plot(cs.getZetaRef('zeta'),label='Random Function')
+                # ax1.xlabel('t')
+                h,l=ax1.get_legend_handles_labels()
+                ax1.legend(h,l)
+            elif target == 'filtered_action' and 'filtered_action' in logs:
+                ax1=plt.subplot(gs[plt_cnt, :])
+                ax1.plot(_l,label='Filtered Action')
+                ax1.plot(cs.getZetaRef('zeta'),label='Filtered Action Ref')
+                # plt.xlabel('t')
+                h,l=ax1.get_legend_handles_labels()
+                ax1.legend(h,l)
+            elif target == 'y_hat':
+                ax1=plt.subplot(gs[plt_cnt, :])
+                ax1.plot(_l,label='y_hat')
+                ax1.plot(logs['y_ref'][index],label='Y_ref')
+                # plt.xlabel('t')
+                h,l=ax1.get_legend_handles_labels()
+                ax1.legend(h,l)
+            else:
+                plt_cnt -= 1
+            plt_cnt += 1
+
+    # plt.show()
+    plt.draw()
+    plt.pause(1) # <-------
+    input("<Hit Enter To Close>")
+    plt.close(fig)
+

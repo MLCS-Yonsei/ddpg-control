@@ -261,6 +261,58 @@ class ControlSystem:
 
         return Y_ref
 
+    def getZetaRef(self,flag):
+        def computeZetaFromActuatorDynamicsRef(ad, action):
+            ad['Z'].append(ad['_z'])
+
+            ad['u1'] = action
+
+            ad['th'] = - ad['co']['a1'] * ad['th1'] + ad['co']['b1'] * ad['u1']
+            ad['_z'] += ad['th'] - ad['th1']
+
+            ad['th1'] = ad['th']
+
+            return ad['_z']
+
+        Y_ref = []
+        Zeta = []
+        
+        # impulse
+        th1 = 0
+        th2 = 0
+        u1 = self.impulse_magnitude
+        u2 = 0
+
+        if self.enable_actuator_dynamics == True:
+            ad = {}
+            ad['co'] = self.computeActuatorDynamics(T_s=0.5, ts=0.02)
+            ad['_z'] = 0.
+            ad['Z'] = []
+            ad['th1'] = 0
+            ad['u1'] = 0
+            ad['th'] = None
+
+            unfiltered_input = []
+
+        _y_ref = 0.
+        for time_index, _t in enumerate(self.T):
+            Y_ref.append(_y_ref)
+
+            # Compute
+            if self.enable_actuator_dynamics == True:
+                _input = self.zetaFunction(time_vector=self.T, index=time_index)
+                unfiltered_input.append(_input)
+                zeta = computeZetaFromActuatorDynamicsRef(ad, _input)
+            else:
+                zeta = self.zetaFunction(time_vector=self.T, index=time_index)
+
+            Zeta.append(zeta)
+
+        if flag == 'zeta':
+            return Zeta
+        elif flag == 'unfiltered_input':
+            return unfiltered_input
+
     def getReward(self, time_index):
         return -((self.Y_ref[time_index] - self.Y[time_index])**2)
 

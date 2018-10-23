@@ -25,7 +25,7 @@ from critic_net import CriticNet
 import argparse
 
 #specify parameters here:
-episodes=10000
+episodes=100000
 is_batch_norm = False #batch normalization switch
 
 def main():

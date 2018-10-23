@@ -3,7 +3,7 @@ import tensorflow as tf
 import math
 import os
 
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 1e-4
 BATCH_SIZE = 64
 TAU = 0.001
 class ActorNet:
