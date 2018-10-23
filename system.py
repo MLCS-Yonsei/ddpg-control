@@ -141,8 +141,9 @@ class ControlSystem:
                 self.u_1 = 0
 
     def getRandomFunction(self, T):
-        print("Get new function")
+        # print("Get new function")
         # self.random_function = createRandomFunction(self.T)
+        pass
 
     def zetaFunction(self, time_vector, index):
         # if self.random_function is None:

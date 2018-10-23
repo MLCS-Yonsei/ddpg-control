@@ -54,25 +54,25 @@ def main():
     reward_st = np.array([0])
 
     log_dir = os.path.join(
-        os.getcwd(), 'logs/action',
-        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        os.getcwd(), 'logs',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), 'action')
 
     if enable_actuator_dynamics == True:
         filtered_log_dir = os.path.join(
-            os.getcwd(), 'logs/filtered_actions',
-            datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            os.getcwd(), 'logs',
+            datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), 'filtered_action')
 
     y_hat_log_dir = os.path.join(
-        os.getcwd(), 'logs/y_hat',
-        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        os.getcwd(), 'logs',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), 'y_hat')
 
     y_ref_log_dir = os.path.join(
-        os.getcwd(), 'logs/y_ref',
-        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        os.getcwd(), 'logs',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), 'y_ref')
 
     gen_function_log_dir = os.path.join(
-        os.getcwd(), 'logs/functions',
-        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        os.getcwd(), 'logs',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), 'function')
     
     os.makedirs(log_dir)
     if enable_actuator_dynamics == True:
