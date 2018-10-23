@@ -54,23 +54,32 @@ def main():
     reward_st = np.array([0])
 
     log_dir = os.path.join(
-        os.getcwd(), 'log',
+        os.getcwd(), 'logs/action',
         datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
     if enable_actuator_dynamics == True:
         filtered_log_dir = os.path.join(
-            os.getcwd(), 'filtered_log',
+            os.getcwd(), 'logs/filtered_actions',
             datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
     y_hat_log_dir = os.path.join(
-        os.getcwd(), 'y_hat_log',
+        os.getcwd(), 'logs/y_hat',
         datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
+    y_ref_log_dir = os.path.join(
+        os.getcwd(), 'logs/y_ref',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
+    gen_function_log_dir = os.path.join(
+        os.getcwd(), 'logs/functions',
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+    
     os.makedirs(log_dir)
     if enable_actuator_dynamics == True:
         os.makedirs(filtered_log_dir)
     os.makedirs(y_hat_log_dir)
+    os.makedirs(y_ref_log_dir)
+    os.makedirs(gen_function_log_dir)
     
     for i in range(episodes):
         print ("==== Starting episode no:",i,"====")
@@ -86,9 +95,7 @@ def main():
             x = observation
             action = agent.evaluate_actor(np.reshape(x,[1,num_states]))
 
-            if action[0] > 1:
-                action[0] = 1
-            elif action[0] < 0:
+            if action[0] < 0:
                 action[0] = 0
 
             noise = exploration_noise.noise()
@@ -98,9 +105,9 @@ def main():
             #     print ("Action at step", t ," :",action,"\n")
             
             if enable_actuator_dynamics == False:
-                observation,reward,Y_plot,t_plot=env.step(action,t)
+                observation,reward,Y_plot,t_plot,y_ref,random_function=env.step(action,t)
             elif enable_actuator_dynamics == True:
-                observation,reward,filtered_action,Y_plot,t_plot=env.step(action,t)
+                observation,reward,filtered_action,Y_plot,t_plot,y_ref,random_function=env.step(action,t)
                 filtered_action_per_episode.append(filtered_action)
             
             # print ("Reward at step", t ," :",reward,"\n")
@@ -131,14 +138,17 @@ def main():
                 if enable_actuator_dynamics == True:
                     np.savetxt(filtered_log_dir + '/' + str(i).zfill(7) + '.txt', filtered_action_per_episode)
                 np.savetxt(y_hat_log_dir + '/' + str(i).zfill(7) + '.txt', Y_plot)
+                np.savetxt(y_ref_log_dir + '/' + str(i).zfill(7) + '.txt', y_ref)
+                np.savetxt(gen_function_log_dir + '/' + str(i).zfill(7) + '.txt', random_function)
 
                 # save model
                 if i % 100 == 0:
                     print('save')
-                    # agent.save_model()
+                    agent.save_model()
                 # print ('\n\n')
-
+                
                 break
+
     total_reward+=reward_per_episode            
     print ("Average reward per episode {}".format(total_reward / episodes)    )
 

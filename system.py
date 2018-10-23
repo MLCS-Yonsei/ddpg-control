@@ -274,9 +274,9 @@ class ControlSystem:
         reward = self.getReward(time_index)
 
         if self.enable_actuator_dynamics == False:
-            return obs, reward, self.Y, self.T
+            return obs, reward, self.Y, self.T, self.Y_ref, self.random_function
         elif self.enable_actuator_dynamics == True:
-            return obs, reward, self.ad['_z'], self.Y, self.T
+            return obs, reward, self.ad['_z'], self.Y, self.T, self.Y_ref, self.random_function
 
     def reset(self):
         print("ENV reset")
