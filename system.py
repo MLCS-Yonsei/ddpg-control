@@ -282,7 +282,7 @@ class ControlSystem:
         print("ENV reset")
         self.resetValues()
 
-        return [0, 0]
+        return [0, 0, 0]
 
 
     def render(self):

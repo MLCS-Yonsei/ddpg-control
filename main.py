@@ -39,7 +39,7 @@ def main():
     #Randomly initialize critic,actor,target critic, target actor network  and replay buffer   
     agent = DDPG(env, is_batch_norm)
 
-    agent.load_model()
+    # agent.load_model()
 
     exploration_noise = OUNoise(env.action_space.shape[0])
     counter=0
