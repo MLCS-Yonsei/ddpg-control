@@ -12,8 +12,8 @@ import matplotlib.animation as animation
 
 from system import ControlSystem
 
-# cs = ControlSystem(enable_actuator_dynamics=False)
-# Y_ref = cs.getYRef(display=False)
+cs = ControlSystem(enable_actuator_dynamics=False)
+Y_ref = cs.getYRef(display=False)
 
 
 # log_dirs = glob('./log/*')
@@ -63,7 +63,7 @@ while True:
     except Exception as ex:
         pass
     data = input("Index:")
-    # plt.plot(Y_ref,label='y_optimal')
+    plt.plot(Y_ref,label='y_optimal')
     plt.plot(logs[int(data)],label='y_hat')
     plt.xlabel('t') 
     plt.show()

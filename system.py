@@ -142,14 +142,14 @@ class ControlSystem:
 
     def getRandomFunction(self, T):
         print("Get new function")
-        self.random_function = createRandomFunction(self.T)
+        # self.random_function = createRandomFunction(self.T)
 
     def zetaFunction(self, time_vector, index):
         # if self.random_function is None:
         #     self.getRandomFunction(self.T)
         # return self.random_function[index]
 
-        _x = int(index * (np.pi / len(time_vector)))
+        _x = index * (np.pi / len(time_vector))
         # print(index)
         return np.cos(_x) / 6 + 2/6 # Cos curve drop from 0.5 to 0.167
         
@@ -295,5 +295,5 @@ class ControlSystem:
         pass
 
 if __name__ == "__main__":
-    cs = ControlSystem(enable_actuator_dynamics=False)
+    cs = ControlSystem(enable_actuator_dynamics=True)
     cs.getYRef(display=True)
