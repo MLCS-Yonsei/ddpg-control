@@ -95,15 +95,22 @@ def main():
             x = observation
             action = agent.evaluate_actor(np.reshape(x,[1,num_states]))
 
-            if action[0] < 0:
-                action[0] = 0
+            
 
             noise = exploration_noise.noise()
+
             action = action[0] + noise #Select action according to current policy and exploration noise
             actions_per_episode.append(action)
             # if i % 100 == 0:
             #     print ("Action at step", t ," :",action,"\n")
+            # print("#", action[0])
+            if action[0] < 0:
+                action = [0]
+            elif action[0] > 1:
+                action = [1]
             
+            # print("Step", t, 'action', action)
+
             if enable_actuator_dynamics == False:
                 observation,reward,Y_plot,t_plot,y_ref,random_function=env.step(action,t)
             elif enable_actuator_dynamics == True:

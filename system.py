@@ -69,6 +69,7 @@ class ControlSystem:
         #     zeta = 1
         # elif zeta < 0:
         #     zeta = 0
+        # print(zeta)
         g = tf(w0*w0, [1,2*zeta,w0*w0])
         gz = c2d(g,ts)
 
@@ -327,7 +328,7 @@ class ControlSystem:
         obs = [self.theta, self.theta - self.theta_1, self.Y[time_index] - self.Y_ref[time_index], self.prev_action]
         reward = self.getReward(time_index)
 
-        self.prev_action = action
+        self.prev_action = action[0]
 
         if self.enable_actuator_dynamics == False:
             return obs, reward, self.Y, self.T, self.Y_ref, self.random_function

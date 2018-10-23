@@ -57,9 +57,9 @@ while True:
                     ax1.plot(logs['function'][index],label='Random Function')
                 else:
                     if 'filtered_action' in logs:
-                        ax1.plot(cs.getZetaRef('unfiltered_input'),label='Random Function')
+                        ax1.plot(cs.getZetaRef('unfiltered_input'),label='Cos function')
                     else:
-                        ax1.plot(cs.getZetaRef('zeta'),label='Random Function')
+                        ax1.plot(cs.getZetaRef('zeta'),label='Cos function')
                 # ax1.xlabel('t')
                 h,l=ax1.get_legend_handles_labels()
                 ax1.legend(h,l)
