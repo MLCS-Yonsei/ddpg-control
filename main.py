@@ -139,7 +139,7 @@ def main():
                     np.savetxt(filtered_log_dir + '/' + str(i).zfill(7) + '.txt', filtered_action_per_episode)
                 np.savetxt(y_hat_log_dir + '/' + str(i).zfill(7) + '.txt', Y_plot)
                 np.savetxt(y_ref_log_dir + '/' + str(i).zfill(7) + '.txt', y_ref)
-                np.savetxt(gen_function_log_dir + '/' + str(i).zfill(7) + '.txt', random_function)
+                # np.savetxt(gen_function_log_dir + '/' + str(i).zfill(7) + '.txt', random_function)
 
                 # save model
                 if i % 100 == 0:
