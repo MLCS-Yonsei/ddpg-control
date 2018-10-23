@@ -34,7 +34,7 @@ class ControlSystem:
         self.timestep_limit = len(self.T)
 
         self.observation_space = spaces.Box(low=0, high=1,
-                                    shape=(3,))
+                                    shape=(4,))
         self.action_space = spaces.Box(low=-0., high=1.,
                                     shape=(1,))
 
@@ -145,13 +145,14 @@ class ControlSystem:
         self.random_function = createRandomFunction(self.T)
 
     def zetaFunction(self, time_vector, index):
-        if self.random_function is None:
-            self.getRandomFunction(self.T)
-        # _x = int(index * (np.pi / len(time_vector)))
-        # print(index)
-        # return np.cos(_x) / 6 + 2/6 # Cos curve drop from 0.5 to 0.167
-        return self.random_function[index]
+        # if self.random_function is None:
+        #     self.getRandomFunction(self.T)
+        # return self.random_function[index]
 
+        _x = int(index * (np.pi / len(time_vector)))
+        # print(index)
+        return np.cos(_x) / 6 + 2/6 # Cos curve drop from 0.5 to 0.167
+        
     def plotZetaRef(self):
         Zeta = []
         for time_index, _t in enumerate(self.T):
@@ -270,8 +271,10 @@ class ControlSystem:
         '''
         self.computeNextStep(action=action[0],current_step=time_index)
 
-        obs = [self.theta, self.theta_1, self.Y_ref[time_index] - self.Y[time_index]]
+        obs = [self.theta, self.theta - self.theta_1, self.Y[time_index] - self.Y_ref[time_index], self.prev_action]
         reward = self.getReward(time_index)
+
+        self.prev_action = action
 
         if self.enable_actuator_dynamics == False:
             return obs, reward, self.Y, self.T, self.Y_ref, self.random_function
@@ -282,7 +285,9 @@ class ControlSystem:
         print("ENV reset")
         self.resetValues()
 
-        return [0, 0, 0]
+        self.prev_action = 0.5
+
+        return [0, 0, 0, self.prev_action]
 
 
     def render(self):

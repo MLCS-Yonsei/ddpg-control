@@ -12,15 +12,16 @@ import matplotlib.animation as animation
 
 from system import ControlSystem
 
-cs = ControlSystem(enable_actuator_dynamics=False)
-Y_ref = cs.getYRef(display=False)
+# cs = ControlSystem(enable_actuator_dynamics=False)
+# Y_ref = cs.getYRef(display=False)
 
 
 # log_dirs = glob('./log/*')
 # log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
-folder = input("folder name:")
 folder_type = input("folder type name:")
-log_dirs = glob('./181021/'+folder_type+'/' + folder)
+folder = input("folder name:")
+
+log_dirs = glob('./logs/'+folder_type+'/' + folder)
 log_files = sorted(glob(os.path.join(log_dirs[len(log_dirs)-1],'*')))
 
 _l = np.loadtxt(log_files[0])
@@ -62,7 +63,7 @@ while True:
     except Exception as ex:
         pass
     data = input("Index:")
-    plt.plot(Y_ref,label='y_optimal')
+    # plt.plot(Y_ref,label='y_optimal')
     plt.plot(logs[int(data)],label='y_hat')
     plt.xlabel('t') 
     plt.show()
