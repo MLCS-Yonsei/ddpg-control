@@ -62,9 +62,9 @@ class CriticNet:
 
             self.saver = tf.train.Saver()
             
-    def create_critic_net(self, num_states=2, num_actions=1):
-        N_HIDDEN_1 = 400
-        N_HIDDEN_2 = 300
+    def create_critic_net(self, num_states=3, num_actions=1):
+        N_HIDDEN_1 = 40
+        N_HIDDEN_2 = 30
         critic_state_in = tf.placeholder("float",[None,num_states])
         critic_action_in = tf.placeholder("float",[None,num_actions])    
     

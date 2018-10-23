@@ -34,7 +34,7 @@ class ControlSystem:
         self.timestep_limit = len(self.T)
 
         self.observation_space = spaces.Box(low=0, high=1,
-                                    shape=(2,))
+                                    shape=(3,))
         self.action_space = spaces.Box(low=-0., high=1.,
                                     shape=(1,))
 
@@ -260,7 +260,7 @@ class ControlSystem:
         return Y_ref
 
     def getReward(self, time_index):
-        return -(abs(self.Y_ref[time_index] - self.Y[time_index])**2)
+        return -((self.Y_ref[time_index] - self.Y[time_index])**2)
 
     def step(self, action, time_index):
         '''
@@ -270,7 +270,7 @@ class ControlSystem:
         '''
         self.computeNextStep(action=action[0],current_step=time_index)
 
-        obs = [self.theta, self.theta - self.theta_1]
+        obs = [self.theta, self.theta_1, self.Y_ref[time_index] - self.Y[time_index]]
         reward = self.getReward(time_index)
 
         if self.enable_actuator_dynamics == False:
@@ -291,5 +291,4 @@ class ControlSystem:
 
 if __name__ == "__main__":
     cs = ControlSystem(enable_actuator_dynamics=False)
-    print("GG")
     cs.getYRef(display=True)

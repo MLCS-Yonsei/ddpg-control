@@ -53,10 +53,10 @@ class ActorNet:
         
 
 
-    def create_actor_net(self, num_states=2, num_actions=1):
+    def create_actor_net(self, num_states=3, num_actions=1):
         """ Network that takes states and return action """
-        N_HIDDEN_1 = 400
-        N_HIDDEN_2 = 300
+        N_HIDDEN_1 = 40
+        N_HIDDEN_2 = 30
         actor_state_in = tf.placeholder("float",[None,num_states])    
         W1_a=tf.Variable(tf.random_uniform([num_states,N_HIDDEN_1],-1/math.sqrt(num_states),1/math.sqrt(num_states)))
         B1_a=tf.Variable(tf.random_uniform([N_HIDDEN_1],-1/math.sqrt(num_states),1/math.sqrt(num_states)))
