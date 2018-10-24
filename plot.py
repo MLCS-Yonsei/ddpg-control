@@ -28,7 +28,7 @@ while True:
         _d = os.path.join(log_dir,target)
         if os.path.exists(_d):
             try:
-                _log_file = os.path.join(_d,str(index).zfill(7)+'.txt'))
+                _log_file = os.path.join(_d,str(index).zfill(7)+'.txt')
                 _l = np.loadtxt(_log_file)
 
                 logs[target] = _l
@@ -39,8 +39,6 @@ while True:
         cs = ControlSystem(enable_actuator_dynamics=True)
     else:
         cs = ControlSystem(enable_actuator_dynamics=False)
-
-    
 
     plt_cnt = 0
     fig = plt.figure(0, figsize=(12, 9), )
