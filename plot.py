@@ -20,8 +20,8 @@ log_dir = os.path.join('logs',folder)
 targets = ['action','filtered_action','function','y_hat','y_ref']
 # targets = ['action']
 
-_at = os.path.join(log_dir,targets[0],'*.txt')
-
+_at = glob(os.path.join(log_dir,targets[0],'*.txt'))
+# print(_at)
 while True:
     index = int(input('Episode Index (max '+str(len(_at)-1)+'):'))
 
